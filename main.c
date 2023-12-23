@@ -23,6 +23,7 @@ that's a branch lolololol
 */
 #include <stdio.h>
 #include "FUNC.h"
+#include "FUNC.c"
 
 
 void main(void)

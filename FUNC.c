@@ -30,8 +30,10 @@ int login(void)
 
     printf("Enter your username: ");
     scanf("%s", username);
+    fflush(stdin);
     printf("Enter your 6 characters password: ");
     scanf("%6s", password);
+    fflush(stdin);
 
     if(strlen(password)!=6)
     {

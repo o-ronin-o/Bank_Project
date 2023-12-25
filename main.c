@@ -24,7 +24,15 @@ that's a branch lolololol
 #include <stdio.h>
 #include "FUNC.h"
 #include "FUNC.c"
-
+typedef struct
+{
+    long long account_number;
+    char name[100];
+    char email[100];
+    double balance;
+    long long mobile;
+    char date_opened[20];
+} accounts;
 
 void main(void)
 {

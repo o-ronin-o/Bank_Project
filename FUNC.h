@@ -18,10 +18,12 @@ typedef struct
 //here in the .h file we're going to write the prototypes of our functions
 
 int login(User *ptr);
-int count_accounts(const char *filename);
+
+int count_accounts();
+
 accounts * load(int accnum);
-
-
+int trans(accounts*accounts_infile,int n,int *sender,int *receiver);
+int save(accounts *account_list,int n);
 
 
 

@@ -7,6 +7,8 @@
 //those are examples from a previous project i did
 //obviously we're going to delete them 
 int login(void);
+int count_accounts();
+accounts * load(int accnum);
 
 
 

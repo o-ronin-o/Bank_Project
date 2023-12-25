@@ -1,36 +1,12 @@
-/*
-here we're going to write the function definitions.
-we have a couple of examples here from a previous project.  
-we're going to delete them they're just here to clarify the purpose of the file. 
-*/
 #include <stdio.h>
 #include "FUNC.h"
 #include <stdlib.h>
 #include <string.h>
 
-int count_accounts(const char *filename, const char *format) {
-    FILE *file = fopen(filename, "r");
-    if (file == NULL) {
-        printf("Error opening the file.\n");
-        return -1;
-    }
 
-    int count = 0;
-    int dummy; // Placeholder for values read by fscanf
-
-    // Loop through the file, counting occurrences of the specified format
-    while (fscanf(file, format, &dummy) == 1) {
-        count++;
-    }
-
-    fclose(file);
-
-    return count;
-}
-
-int login(void)
+int login(User *ptr)
 {
-    User users[100];
+    //User users[100];
 
     FILE *f=fopen("users.txt","r");
     if (f==NULL)
@@ -40,7 +16,7 @@ int login(void)
     }
 
     int count=0;
-    while (fscanf(f,"%s %s",users[count].username,users[count].password)!=EOF)
+    while (fscanf(f,"%s %s",ptr[count].username,ptr[count].password)!=EOF)
         count++;
 
     fclose(f);
@@ -63,7 +39,7 @@ int login(void)
 
     for (int i=0; i<count; i++)
     {
-        if (strcmp(users[i].username,username)==0 && strcmp(users[i].password,password)==0)
+        if (strcmp(ptr[i].username,username)==0 && strcmp(ptr[i].password,password)==0)
         {
             printf("Login successful\n");
             return 1;
@@ -73,26 +49,3 @@ int login(void)
     return 0;
 }
 
-
- accounts * load(int accnum)
-{
-    int i;
-    FILE *f;
-    f=fopen("accounts.txt","r");
-      if (f==NULL)
-          return NULL;
-    accounts *list = (accounts *)malloc(accnum * sizeof(accounts)); // Allocate memory for the array of accounts//
-    if (list == NULL)
-    {
-        printf("Error in allocating memory.\n");
-        fclose(f);
-        return NULL;
-    }
-    for (i=0; i<accnum; i++)
-    {
-        fscanf(f,"%lld,%99[^,],%99[^,],%lf,%lld,%19[^\n]",&list[i].account_number,list[i].name,list[i].email
-               ,&list[i].balance,&list[i].mobile,list[i].date_opened);
-    }
-    fclose(f);
-    return list;
-}

@@ -8,20 +8,23 @@ we're going to delete them they're just here to clarify the purpose of the file.
 #include <stdlib.h>
 #include <string.h>
 
-int count_accounts()
-{
-    FILE *f= fopen("accounts.txt","r");
-    if (f==NULL)
-    {
-        printf("Error: can not find accounts.txt");
-        return 0;
+int count_accounts(const char *filename, const char *format) {
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        printf("Error opening the file.\n");
+        return -1;
     }
-    int count=0;
-    char ch;
-    while ((ch=getc(f))!=EOF)
-        if(ch=='\n')
-            count++;
-    fclose(f);
+
+    int count = 0;
+    int dummy; // Placeholder for values read by fscanf
+
+    // Loop through the file, counting occurrences of the specified format
+    while (fscanf(file, format, &dummy) == 1) {
+        count++;
+    }
+
+    fclose(file);
+
     return count;
 }
 

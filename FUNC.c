@@ -69,6 +69,8 @@ int login(void)
     printf("Invalid username or password");
     return 0;
 }
+
+
  accounts * load(int accnum)
 {
     int i;

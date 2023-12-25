@@ -13,7 +13,7 @@ int count_accounts()
     FILE *f= fopen("accounts.txt","r");
     if (f==NULL)
     {
-        printf("Error: can not find accounts.txt");
+        printf("Error: can not find accounts.txt\n");
         return 0;
     }
     int count=0;
@@ -88,4 +88,70 @@ int login(void)
     }
     fclose(f);
     return list;
+}
+
+
+int trans(accounts*accounts_infile,int n,int *sender,int *receiver)
+{
+    long long account1,account2;
+    double amount;
+    FILE *f;
+    f=fopen("accounts.txt","r");
+    if (f==NULL)
+    {
+        printf("Error: can not find accounts.txt\n");
+        return 0 ;
+    }
+    printf("Enter the sender's account number: ");
+    scanf("%lld",&account1);
+    fflush(stdin);
+    printf("Enter the receiver's account number: ");
+    scanf("%lld",&account2);
+    fflush(stdin);
+    printf("Enter the amount to be transfered: ");
+    scanf("%lf",&amount);
+    fflush(stdin);
+    //find sender's and receiver's location//
+    int i;
+    for (i=0;i<n;i++)
+    {
+        if(accounts_infile[i].account_number==account1)
+            *sender=i;
+        else if(accounts_infile[i].account_number==account2)
+            *receiver=i;
+    }
+    if(*sender==-1|| *receiver==-1)
+    {printf("Invalid account number(s)\n ");
+    return 0;
+    }
+    //check if the amount to transfer is lower than the sender's balance//
+    if (amount>accounts_infile[*sender].balance)
+    {
+        printf("Not enough balance to transfer. \n");
+        return 0;
+    }
+    //modify the balance of the sender and the receiver//
+    accounts_infile[*sender].balance-=amount;
+    accounts_infile[*receiver].balance+=amount;
+}
+
+int save(accounts *account_list,int n)
+{ int i;
+    char ch;
+      FILE *f;
+    printf("Do you want to save changes? (y/n)\n");
+    scanf(" %c", &ch);
+    fflush(stdin);
+    if (ch == 'y' || ch == 'Y')
+    {f=fopen("accounts.txt","w");
+    for (i=0;i<n; i++)
+    {
+        fprintf(f,"%lld,%s,%s,%.2lf,%lld,%s\n",account_list[i].account_number,
+                account_list[i].name,account_list[i].email,
+                account_list[i].balance,account_list[i].mobile,account_list[i].date_opened);
+    }
+                                return 1;
+                                }
+    else
+        return 0;
 }

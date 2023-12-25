@@ -53,24 +53,22 @@ int login(User *ptr)
     printf("Invalid username or password");
     return 0;
 }
-int count_accounts(const char *filename) {
-    FILE *file = fopen(filename, "r");
-    if (file == NULL) {
-        printf("Error opening the file.\n");
-        return -1;
+int count_accounts()
+{
+    FILE *f= fopen("accounts.txt","r");
+    if (f==NULL)
+    {
+        printf("Error: can not find accounts.txt");
+        return 0;
     }
-
-    int count = 0;
-    int accountNumber;
-
-    // Loop through the file, counting occurrences of the specified format
-    while (fscanf(file, "%d,%*[^,\n]", &accountNumber) == 1) {
-        count++;
-    }
-
-    fclose(file);
-
+    int count=0;
+    char ch;
+    while ((ch=getc(f))!=EOF)
+        if(ch=='\n')
+            count++;
+    fclose(f);
     return count;
+}
  accounts * load(int accnum)
 {
     int i;

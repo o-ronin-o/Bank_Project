@@ -1,26 +1,3 @@
-/*
-NAME: Omar.W.Al-Qattan 				   || 	        last update: December 21,2023
-NAME: Abdallah.A.Na'eem 			   ||		last update: 
-NAME: Abdelrahman.A.Abdo(7asal eh) 	           || 		last update: 
-NAME: Tarek.M.El-Sayed 				   || 		last update:
-NAME: Muhammed.Y.Abu-Tabl 			   || 		last update:
-
-Please note that you HAVE TO write comments consistently to intrepret and clarify your code for the other team members 
-so we coud easily track possible errors  
-
-this is an edit 
-that's a branch lolololol
-3aw3aw
-
-
-
-
-
-
-
-
-
-*/
 #include <stdio.h>
 #include "FUNC.h"
 #include <stdlib.h>
@@ -36,6 +13,8 @@ void main(void)
     while (1)
     {
         check = login(s1);
+		int accnum = count_accounts("accounts.txt");
+		accounts *accounts_infile = load(accnum);
         if (check == 1)
         {
             printf("Welcome back\n");

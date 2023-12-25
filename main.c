@@ -7,7 +7,7 @@ NAME: Muhammed.Y.Abu-Tabl 			   || 		last update:
 
 Please note that you HAVE TO write comments consistently to intrepret and clarify your code for the other team members 
 so we coud easily track possible errors  
-
+*/
 #include <stdio.h>
 #include "FUNC.h"
 #include <stdlib.h>

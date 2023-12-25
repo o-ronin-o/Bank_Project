@@ -1,7 +1,7 @@
 /*
 here we're going to write the function definitions.
-we have a couple of examples here from a previous project.  
-we're going to delete them they're just here to clarify the purpose of the file. 
+we have a couple of examples here from a previous project.
+we're going to delete them they're just here to clarify the purpose of the file.
 */
 #include <stdio.h>
 #include "FUNC.h"
@@ -53,6 +53,7 @@ int login(User *ptr)
     printf("Invalid username or password");
     return 0;
 }
+
 int count_accounts()
 {
     FILE *f= fopen("accounts.txt","r");
@@ -82,14 +83,20 @@ int count_accounts()
         printf("Error in allocating memory.\n");
         fclose(f);
         return NULL;
+
     }
-    for (i=0; i<accnum; i++)
-    {
-        fscanf(f,"%lld,%99[^,],%99[^,],%lf,%lld,%19[^\n]",&list[i].account_number,list[i].name,list[i].email
-               ,&list[i].balance,&list[i].mobile,list[i].date_opened);
+
+    int count = 0;
+    int accountNumber;
+
+    // Loop through the file, counting occurrences of the specified format
+    while (fscanf(file, "%d,%*[^,\n]", &accountNumber) == 1) {
+        count++;
     }
-    fclose(f);
-    return list;
+
+    fclose(file);
+
+    return count;
 }
 
 

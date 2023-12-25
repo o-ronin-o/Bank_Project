@@ -18,7 +18,7 @@ typedef struct
 //here in the .h file we're going to write the prototypes of our functions
 
 int login(User *ptr);
-int count_accounts();
+int count_accounts(const char *filename);
 accounts * load(int accnum);
 
 

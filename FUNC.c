@@ -1,3 +1,8 @@
+/*
+here we're going to write the function definitions.
+we have a couple of examples here from a previous project.
+we're going to delete them they're just here to clarify the purpose of the file.
+*/
 #include <stdio.h>
 #include "FUNC.h"
 #include <stdlib.h>

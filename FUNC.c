@@ -8,26 +8,10 @@ we're going to delete them they're just here to clarify the purpose of the file.
 #include <stdlib.h>
 #include <string.h>
 
-int count_accounts()
-{
-    FILE *f= fopen("accounts.txt","r");
-    if (f==NULL)
-    {
-        printf("Error: can not find accounts.txt\n");
-        return 0;
-    }
-    int count=0;
-    char ch;
-    while ((ch=getc(f))!=EOF)
-        if(ch=='\n')
-            count++;
-    fclose(f);
-    return count;
-}
 
-int login(void)
+int login(User *ptr)
 {
-    User users[100];
+    //User users[100];
 
     FILE *f=fopen("users.txt","r");
     if (f==NULL)
@@ -37,7 +21,7 @@ int login(void)
     }
 
     int count=0;
-    while (fscanf(f,"%s %s",users[count].username,users[count].password)!=EOF)
+    while (fscanf(f,"%s %s",ptr[count].username,ptr[count].password)!=EOF)
         count++;
 
     fclose(f);
@@ -47,8 +31,10 @@ int login(void)
 
     printf("Enter your username: ");
     scanf("%s", username);
+    fflush(stdin);
     printf("Enter your 6 characters password: ");
     scanf("%6s", password);
+    fflush(stdin);
 
     if(strlen(password)!=6)
     {
@@ -58,7 +44,7 @@ int login(void)
 
     for (int i=0; i<count; i++)
     {
-        if (strcmp(users[i].username,username)==0 && strcmp(users[i].password,password)==0)
+        if (strcmp(ptr[i].username,username)==0 && strcmp(ptr[i].password,password)==0)
         {
             printf("Login successful\n");
             return 1;
@@ -67,6 +53,24 @@ int login(void)
     printf("Invalid username or password");
     return 0;
 }
+int count_accounts(const char *filename) {
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        printf("Error opening the file.\n");
+        return -1;
+    }
+
+    int count = 0;
+    int accountNumber;
+
+    // Loop through the file, counting occurrences of the specified format
+    while (fscanf(file, "%d,%*[^,\n]", &accountNumber) == 1) {
+        count++;
+    }
+
+    fclose(file);
+
+    return count;
  accounts * load(int accnum)
 {
     int i;

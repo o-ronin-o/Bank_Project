@@ -23,12 +23,12 @@ void main(void)
     while (1)
     {
         check = login(s1);
-		int number_of_accounts = count_accounts();
+		int number_of_accounts=count_accounts();
 		accounts *accounts_infile = load(number_of_accounts);
         if (check == 1)
         {
             printf("Welcome back\n");
-            printf("\nWhat do you want to do?\nL Load account data.\nS Search.\nE Exit system.\n.T Transfer balance\n");
+            printf("\nWhat do you want to do?\nL Load account data.\nS Search.\nE Exit system.\nT Transfer balance\n");
 
             fflush(stdin);
             scanf(" %c", &choice1);
@@ -48,16 +48,26 @@ void main(void)
                     // Add code for exiting the system
                     break;
 		    case 'T':
-		    int sender_index=-1,receiver_index=-1;
-    int sender_index=-1,receiver_index=-1;
-    if(trans(accounts_infile,number_of_accounts,&sender_index,&receiver_index))
     {
-    if (save(accounts_infile,number_of_accounts))
+        int sender_index = -1, receiver_index = -1;
+        if (trans(accounts_infile, number_of_accounts, &sender_index, &receiver_index))
         {
-            printf("Transfer successful!\nSender's new balance: %.2lf\nReceiver's new balance: %.2lf\n",
-                accounts_infile[sender_index].balance,accounts_infile[receiver_index].balance);}
-    else printf("Changes discarded\n");}
-} break;
+            if (save(accounts_infile, number_of_accounts))
+            {
+                printf("Transfer successful!\nSender's new balance: %.2lf\nReceiver's new balance: %.2lf\n",
+                       accounts_infile[sender_index].balance, accounts_infile[receiver_index].balance);
+            }
+            else
+            {
+                printf("Error: Unable to save changes.\n");
+            }
+        }
+        else
+        {
+            printf("Transfer failed. Changes discarded.\n");
+        }
+    }
+    break;
                 default:
                     printf("Invalid choice\n");
             }

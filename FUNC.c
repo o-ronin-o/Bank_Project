@@ -53,4 +53,22 @@ int login(User *ptr)
     printf("Invalid username or password");
     return 0;
 }
+int count_accounts(const char *filename) {
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        printf("Error opening the file.\n");
+        return -1;
+    }
 
+    int count = 0;
+    int accountNumber;
+
+    // Loop through the file, counting occurrences of the specified format
+    while (fscanf(file, "%d,%*[^,\n]", &accountNumber) == 1) {
+        count++;
+    }
+
+    fclose(file);
+
+    return count;
+}

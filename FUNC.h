@@ -1,13 +1,24 @@
 #ifndef _FUNC_H_
 #define _FUNC_H_
 
-
-
+typedef struct
+{
+    char username[50];
+    char password[7];
+} User;
+typedef struct
+{
+    long long account_number;
+    char name[100];
+    char email[100];
+    double balance;
+    long long mobile;
+    char date_opened[20];
+} accounts;
 //here in the .h file we're going to write the prototypes of our functions
-//those are examples from a previous project i did
-//obviously we're going to delete them 
-int login(void);
-int count_accounts();
+
+int login(User *ptr);
+int count_accounts(const char *filename);
 accounts * load(int accnum);
 int trans(accounts*accounts_infile,int n,int *sender,int *receiver);
 int save(accounts *account_list,int n);

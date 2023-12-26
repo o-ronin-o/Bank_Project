@@ -26,7 +26,7 @@ int trans(accounts*accounts_infile,int n,int *sender,int *receiver);
 int save(accounts *account_list,int n);
 void withdraw(accounts *ptr, int acc_no);
 void advanced_search(accounts *ptr,int acc_no );
-
+void deposit(accounts *ptr, int acc_no);
 
 
 

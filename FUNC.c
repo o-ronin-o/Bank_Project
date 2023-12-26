@@ -231,3 +231,35 @@ void withdraw(accounts *ptr, int acc_no)
 
     printf("Account not found with account number %lld\n", search_no);
 }
+void advanced_search(accounts *ptr,int acc_no )
+{
+    char keyword[20];
+    int found=0;
+    printf("Enter a keyword:");
+    scanf("%s",&keyword);
+    printf("\n");
+     printf("Search results:\n");
+    for (int i = 0; i < acc_no; i++)
+    {
+        // Check if the keyword present or not
+        if (strstr(ptr[i].name, keyword) != NULL )
+        {
+            printf("\n");
+            printf("Account Number: %lld\n", ptr[i].account_number);
+            printf("Name: %s\n", ptr[i].name);
+            printf("Email: %s\n", ptr[i].email);
+            printf("Balance: %.2f\n", ptr[i].balance);
+            printf("Mobile: %lld\n", ptr[i].mobile);
+            printf("Date Opened: %s\n", ptr[i].date_opened);
+            printf("\n");
+
+            found=1;
+
+        }
+    }
+
+    if (found==0)
+    {
+        printf("No accounts found matching this keyword '%s'.\n", keyword);
+    }
+}

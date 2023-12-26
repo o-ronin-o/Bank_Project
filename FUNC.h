@@ -24,6 +24,7 @@ int count_accounts();
 accounts * load(int accnum);
 int trans(accounts*accounts_infile,int n,int *sender,int *receiver);
 int save(accounts *account_list,int n);
+void withdraw(accounts *ptr, int acc_no);
 
 
 

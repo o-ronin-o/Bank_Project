@@ -164,3 +164,70 @@ int save(accounts *account_list,int n)
     else
         return 0;
 }
+void withdraw(accounts *ptr, int acc_no)
+{
+    long long search_no;
+    int withdrawal_value, x;
+
+    printf("Enter the account number: ");
+    scanf("%lld", &search_no);
+
+    for (int i = 0; i < acc_no; i++)
+    {
+        if (ptr[i].account_number == search_no)
+        {
+            printf("Enter the withdrawal value (should not exceeds the balance or 10,000$) : ");
+            scanf("%d", &withdrawal_value);
+
+            if (withdrawal_value <= 10000&&withdrawal_value<=ptr[i].balance)
+            {
+                ptr[i].balance -= withdrawal_value;
+                if (save(ptr,acc_no)==1)
+                    printf("successful withdrawal.New balance: $%.2f\n", ptr[i].balance);
+                else
+                {
+                    printf("Quitting without making a withdraw.\n");
+                    printf("Changes will not be saved.\n");
+                }
+
+            }
+            else
+            {
+                printf("The value exceeds the balance or exceeds 10,000$\n");
+                printf("Enter 1 to edit the withdraw value or 0 to quit: ");
+                scanf("%d", &x);
+
+                if (x == 1)
+                {
+                    printf("Enter the corrected withdraw value (should not exceeds the balance or 10,000$): ");
+                    scanf("%d", &withdrawal_value);
+
+                    if (withdrawal_value <= 10000&&withdrawal_value<=ptr[i].balance)
+                    {
+                        ptr[i].balance -= withdrawal_value;
+                        if (save(ptr,acc_no)==1)
+                            printf(" successful. New balance: $%.2f\n", ptr[i].balance);
+                        else
+                        {
+                            printf("Quitting without making a withdraw.\n");
+                            printf("Changes will not be saved.\n");
+                        }
+
+                    }
+                    else
+                    {
+                        printf("The corrected value still exceeds the balance. Quitting.\n");
+                    }
+                }
+                else
+                {
+                    printf("Quitting without making a withdraw.\n");
+                }
+            }
+
+            return;
+        }
+    }
+
+    printf("Account not found with account number %lld\n", search_no);
+}

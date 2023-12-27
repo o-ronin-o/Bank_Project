@@ -33,5 +33,5 @@ void print_sorted(accounts *account_list, int accnum);
 void sortByName(accounts *account_list, int accnum);
 void printMonthYearFormat(char *date);
 int compareDates(char *date1, char *date2);
-
+void sortByDate(accounts *account_list, int accnum);
 #endif

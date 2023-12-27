@@ -65,7 +65,7 @@ int main(void)
                     trans(accounts_infile, number_of_accounts);
                     break;
                 case 9:
-                    // Call the report function here
+                    report(accounts_infile, number_of_accounts);
                     break;
                 case 10:
                     print_sorted(accounts_infile, number_of_accounts);

@@ -1,13 +1,13 @@
 
 /*
 NAME: Omar.W.Al-Qattan 				   || 	        last update: December 21,2023
-NAME: Abdallah.A.Na'eem 			   ||		last update: 
-NAME: Abdelrahman.A.Abdo(7asal eh) 	           || 		last update: 
+NAME: Abdallah.A.Na'eem 			   ||		last update:
+NAME: Abdelrahman.A.Abdo(7asal eh) 	           || 		last update:
 NAME: Tarek.M.El-Sayed 				   || 		last update:
 NAME: Muhammed.Y.Abu-Tabl 			   || 		last update:
 
-Please note that you HAVE TO write comments consistently to intrepret and clarify your code for the other team members 
-so we coud easily track possible errors  
+Please note that you HAVE TO write comments consistently to intrepret and clarify your code for the other team members
+so we coud easily track possible errors
 */
 
 
@@ -17,7 +17,7 @@ so we coud easily track possible errors
 #include <string.h>
 #include <ctype.h>  // Include this for the toupper function
 
-void main(void)
+int main(void)
 {
     int check = 0;
     int choice1 = 0;
@@ -34,7 +34,7 @@ void main(void)
             printf("Welcome back\n");
             printf("\nWhat do you want to do?\nL Load account data.\nS Search.\nE Exit system.\nT Transfer balance\n");
 
-	
+
 
 
             fflush(stdin);
@@ -56,36 +56,17 @@ void main(void)
                     break;
 
 		    case 'T':
-    {
-        int sender_index = -1, receiver_index = -1;
-        if (trans(accounts_infile, number_of_accounts, &sender_index, &receiver_index))
-        {
-            if (save(accounts_infile, number_of_accounts))
-            {
-                printf("Transfer successful!\nSender's new balance: %.2lf\nReceiver's new balance: %.2lf\n",
-                       accounts_infile[sender_index].balance, accounts_infile[receiver_index].balance);
-            }
-            else
-            {
-                printf("Error: Unable to save changes.\n");
-            }
-        }
-        else
-        {
-            printf("Transfer failed. Changes discarded.\n");
-        }
-    }
-    break;
-
-
-                default:
-                    printf("Invalid choice\n");
-            }
-        }
-        else
-        {
-            printf("Exiting system\n");
-            break;
-        }
-    }
+			{
+				trans(accounts_infile,number_of_accounts);
+				break;
+			}
+			default:
+			{
+				printf("went to the default");
+				break;
+			}
+		    }
+		return 0;
 }
+    }
+	}

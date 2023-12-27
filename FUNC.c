@@ -660,3 +660,55 @@ void print_sorted(accounts *account_list, int accnum)
         printf("-------------------\n");
     }
 }
+void report(accounts *accounts_infile,int n)
+{
+    int i,x=1;
+    long long account_number;
+    char accnum[20];
+    printf("Enter the account number you want a report about: ");
+    scanf("%lld",&account_number);
+    for (i=0; i<n; i++)   // check if the account exist //
+        if(accounts_infile[i].account_number==account_number)
+        {
+            x=0;
+            break;
+        }
+    if(x)
+    {
+        printf("The account doesn't exist\n");
+        return;
+    }
+    //converting long long data type into array of character//
+    sprintf(accnum,"%lld.txt",account_number);
+    FILE *f;
+    f=fopen(accnum,"r");
+    if (f==NULL)
+    {
+        printf("The client with account number %lld hasn't made any transaction\n",account_number);
+        fclose(f);
+        return;
+    }
+    char str[50];
+    char transaction[200][50];
+    int number_of_transaction=0;
+    while ((fgets(str,sizeof(str),f))!=NULL&& number_of_transaction<200)
+    {
+        strcpy(transaction[number_of_transaction],str); //putting each string read by str in a row in the transaction 2d string//
+        number_of_transaction++;
+    }
+    if (number_of_transaction==0) //check if it's an empty text file//
+    {
+        printf("\nThe client with account number %lld hasn't made any transaction\n",account_number);
+        fclose(f);
+        return;
+    }
+
+    int num=number_of_transaction-1;
+    printf("The last transactions for account %lld:\n",account_number);
+    //printing last 5 transaction if there are more than five or printing all transaction if less than 5//
+    for(num; num>=number_of_transaction-5&&num>=0; num--)
+    {
+        printf("%s",transaction[num]);
+    }
+    fclose(f);
+}

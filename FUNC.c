@@ -328,3 +328,52 @@ void deposit(accounts *ptr, int acc_no)
 
     printf("Account not found with account number %lld\n", search_no);
 }
+
+
+void delete_account(accounts *account_list, int *accnum)
+{
+    long long account_to_delete;
+    printf("Enter the account number you want to delete: ");
+    scanf("%lld", &account_to_delete);
+
+    int found = 0; // Flag to indicate if the account is found
+
+    for (int i = 0; i <= *accnum ; i++)
+    {
+        if (account_list[i].account_number == account_to_delete)
+        {
+            found = 1; // Account found
+
+            if (account_list[i].balance > 0)
+            {
+                printf("Deletion of that account is rejected because it has a balance.\n");
+            }
+            else
+            {
+                for (int j = i; j < *accnum -1; j++)
+                {
+                    account_list[j] = account_list[j + 1];
+                }
+
+
+                // Update the file
+                if (save(account_list,*accnum-1)==1)
+                {
+                    (*accnum)--;
+                    printf("Account deleted successfully.\n");
+                }
+                else
+                {
+                    printf("Quitting without deleting the account.\n");
+                    printf("Changes will not be saved.\n");
+                }
+            }
+            break; // Stop searching after finding the account
+        }
+    }
+
+    if (!found)
+    {
+        printf("Account not found or invalid account number entered.\n");
+    }
+}

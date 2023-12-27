@@ -20,15 +20,13 @@ typedef struct
 int login(User *ptr);
 
 int count_accounts();
-
-accounts * load(int accnum);
-int trans(accounts*accounts_infile,int n,int *sender,int *receiver);
+void transaction_record(long long account_number,double balance,int transaction_type);
+accounts *load(int accnum);
+void trans(accounts *accounts_infile,int n);
 int save(accounts *account_list,int n);
 void withdraw(accounts *ptr, int acc_no);
 void advanced_search(accounts *ptr,int acc_no );
 void deposit(accounts *ptr, int acc_no);
-void delete_account(accounts *account_list, int *accnum);
-void print_sorted(accounts *account_list, int accnum);
 
 
 

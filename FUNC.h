@@ -30,6 +30,7 @@ void deposit(accounts *ptr, int acc_no);
 void modify(accounts *accountList, int n);
 void delete_account(accounts *account_list, int *accnum);
 void print_sorted(accounts *account_list, int accnum);
+void sortByName(accounts *account_list, int accnum);
 
 
 #endif

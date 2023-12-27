@@ -27,6 +27,8 @@ int save(accounts *account_list,int n);
 void withdraw(accounts *ptr, int acc_no);
 void advanced_search(accounts *ptr,int acc_no );
 void deposit(accounts *ptr, int acc_no);
+void delete_account(accounts *account_list, int *accnum);
+void print_sorted(accounts *account_list, int accnum);
 
 
 

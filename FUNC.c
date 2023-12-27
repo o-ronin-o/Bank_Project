@@ -354,3 +354,69 @@ void deposit(accounts *ptr, int acc_no)
 
     printf("Account not found with account number %lld\n", search_no);
 }
+void modify(accounts *accountList, int n)
+{
+    int i;
+    accounts acc;
+    FILE *f = fopen("accounts.txt", "r+");
+    if (f == NULL)
+    {
+        perror("Error opening the file");
+        return;
+    }
+    printf("Enter your account number: ");
+
+    if (scanf("%lld", &acc.account_number) != 1)
+    {
+        printf("Error reading account number.\n");
+        fclose(f);
+        return;
+    }
+
+    int account_found = 0;
+    for (i = 0; i < n; i++)
+    {
+        if (accountList[i].account_number == acc.account_number)
+        {
+            account_found = 1;
+            printf("Enter the new name: ");
+            getchar();
+            if (fgets(accountList[i].name, sizeof(accountList[i].name), stdin) == NULL)
+            {
+                printf("Error reading name.\n");
+                fclose(f);
+                return;
+            }
+            accountList[i].name[strcspn(accountList[i].name, "\n")] = '\0'; // remove trailing newline
+
+            printf("Enter the new Email: ");
+            if (scanf("%99s", accountList[i].email) != 1)
+            {
+                printf("Error reading email.\n");
+                fclose(f);
+                return;
+            }
+            fflush(stdin);
+            printf("Enter the new phone number: ");
+            if (scanf("%lld", &accountList[i].mobile) != 1)
+            {
+                printf("Error reading phone number.\n");
+                fclose(f);
+                return;
+            }
+
+            int x = save(accountList,n);
+            if (x==1)
+                printf("Account details modified successfully.\n");
+            else
+                printf("The approach was cancelled.\n");
+        }
+    }
+
+    if (!account_found)
+    {
+        printf("Account was not found.\n");
+    }
+
+    fclose(f);
+}

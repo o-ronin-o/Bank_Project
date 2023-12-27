@@ -377,3 +377,194 @@ void delete_account(accounts *account_list, int *accnum)
         printf("Account not found or invalid account number entered.\n");
     }
 }
+
+
+
+
+
+void sortByName(accounts *account_list, int accnum)
+{
+    int i, j;
+    accounts temp;
+
+    for (i = 0; i < accnum - 1; i++)
+    {
+        for (j = 0; j < accnum - i - 1; j++)
+        {
+            // Compare names and swap if needed
+            if (strcmp(account_list[j].name, account_list[j + 1].name) > 0)
+            {
+                // Swap accounts
+                temp = account_list[j];
+                account_list[j] = account_list[j + 1];
+                account_list[j + 1] = temp;
+            }
+        }
+    }
+}
+
+void printMonthYearFormat(char *date) {
+    int year, month;
+    sscanf(date, "%d-%d", &month, &year);
+
+    switch(month) {
+        case 1:
+            printf("January");
+            break;
+        case 2:
+            printf("February");
+            break;
+        case 3:
+            printf("March");
+            break;
+        case 4:
+            printf("April");
+            break;
+        case 5:
+            printf("May");
+            break;
+        case 6:
+            printf("June");
+            break;
+        case 7:
+            printf("July");
+            break;
+        case 8:
+            printf("August");
+            break;
+        case 9:
+            printf("September");
+            break;
+        case 10:
+            printf("October");
+            break;
+        case 11:
+            printf("November");
+            break;
+        case 12:
+            printf("December");
+            break;
+        default:
+            printf("Invalid Month");
+            return;
+    }
+    printf(" %d\n", year);
+}
+
+int compareDates(char *date1, char *date2)
+{
+    // Assuming date format: YYYY-MM-DD
+    int year1, month1, year2, month2;
+
+    sscanf(date1, "%d-%d", &month1, &year1);
+    sscanf(date2, "%d-%d", &month2, &year2);
+
+    // Compare the years first
+    if (year1 < year2)
+    {
+        return -1;
+    }
+    else if (year1 > year2)
+    {
+        return 1;
+    }
+    else
+    {
+        // If years are the same, compare the months
+        if (month1 < month2)
+        {
+            return -1;
+        }
+        else if (month1 > month2)
+        {
+            return 1;
+        }
+        else
+        {
+            return 0; // Dates are equal
+        }
+    }
+}
+
+void sortByDate(accounts *account_list, int accnum)
+{
+    int i, j;
+    accounts temp;
+
+    for (i = 0; i < accnum - 1; i++)
+    {
+        for (j = 0; j < accnum - i - 1; j++)
+        {
+            // Compare dates and swap if needed
+            if (compareDates(account_list[j].date_opened, account_list[j + 1].date_opened) > 0)
+            {
+                // Swap accounts
+                temp = account_list[j];
+                account_list[j] = account_list[j + 1];
+                account_list[j + 1] = temp;
+            }
+        }
+    }
+}
+
+void sortByBalance(accounts *account_list, int accnum)
+{
+    int i, j;
+    accounts temp;
+
+    for (i = 0; i < accnum - 1; i++)
+    {
+        for (j = 0; j < accnum - i - 1; j++)
+        {
+            // Compare balances and swap if needed
+            if (account_list[j].balance > account_list[j + 1].balance)
+            {
+                // Swap accounts
+                temp = account_list[j];
+                account_list[j] = account_list[j + 1];
+                account_list[j + 1] = temp;
+            }
+        }
+    }
+}
+
+void print_sorted(accounts *account_list, int accnum)
+{
+
+    int choice;
+    printf("Choose sorting criteria:\n");
+    printf("1. Sort by Name\n");
+    printf("2. Sort by Date\n");
+    printf("3. Sort by Balance\n");
+    scanf("%d", &choice);
+
+    switch (choice)
+    {
+    case 1:
+        sortByName(account_list, accnum);
+        break;
+    case 2:
+        sortByDate(account_list, accnum);
+        break;
+    case 3:
+        sortByBalance(account_list, accnum);
+        break;
+    default:
+        printf("Invalid choice.\n");
+        return;
+    }
+
+    // Print the sorted accounts
+    printf("Sorted Accounts:\n\n");
+    for (int i = 0; i < accnum; i++)
+    {
+        printf("Account Number: %lld\n", account_list[i].account_number);
+        printf("Name: %s\n", account_list[i].name);
+        printf("Email: %s\n", account_list[i].email);
+        printf("Balance: %.2lf$\n", account_list[i].balance);
+        printf("Mobile: 0%lld\n", account_list[i].mobile);
+        printf("Date Opened: ");
+        printMonthYearFormat(account_list[i].date_opened);
+        printf("-------------------\n");
+    }
+}

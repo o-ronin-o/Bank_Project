@@ -202,53 +202,37 @@ void withdraw(accounts *ptr, int acc_no)
     {
         if (ptr[i].account_number == search_no)
         {
-            printf("Enter the withdrawal value (should not exceeds the balance or 10,000$) : ");
-            scanf("%d", &withdrawal_value);
+            do
+            {
+                printf("Enter the withdrawal value (should not exceed the balance or $10,000): ");
+                scanf("%d", &withdrawal_value);
 
-            if (withdrawal_value <= 10000&&withdrawal_value<=ptr[i].balance)
+                if (!(withdrawal_value <= 10000 && withdrawal_value <= ptr[i].balance))
+                {
+                    printf("The withdrawal value exceeds the balance or $10,000\n");
+                    printf("Press 1 to edit the withdrawal value or 0 to quit: ");
+                    scanf("%d", &x);
+                }
+            } while (!(withdrawal_value <= 10000 && withdrawal_value <= ptr[i].balance) && x == 1);
+
+            if (withdrawal_value <= 10000 && withdrawal_value <= ptr[i].balance)
             {
                 ptr[i].balance -= withdrawal_value;
-                if (save(ptr,acc_no)==1)
-                    printf("successful withdrawal.New balance: $%.2f\n", ptr[i].balance);
+                if (save(ptr, acc_no) == 1)
+                {
+                    printf("Successful withdrawal. New balance: $%.2f\n", ptr[i].balance);
+                      transaction_record(search_no,withdrawal_value,1);
+
+                }
                 else
                 {
-                    printf("Quitting without making a withdraw.\n");
+                    printf("Quitting without making a withdrawal.\n");
                     printf("Changes will not be saved.\n");
                 }
-
             }
             else
             {
-                printf("The value exceeds the balance or exceeds 10,000$\n");
-                printf("Enter 1 to edit the withdraw value or 0 to quit: ");
-                scanf("%d", &x);
-
-                if (x == 1)
-                {
-                    printf("Enter the corrected withdraw value (should not exceeds the balance or 10,000$): ");
-                    scanf("%d", &withdrawal_value);
-
-                    if (withdrawal_value <= 10000&&withdrawal_value<=ptr[i].balance)
-                    {
-                        ptr[i].balance -= withdrawal_value;
-                        if (save(ptr,acc_no)==1)
-                            printf(" successful. New balance: $%.2f\n", ptr[i].balance);
-                        else
-                        {
-                            printf("Quitting without making a withdraw.\n");
-                            printf("Changes will not be saved.\n");
-                        }
-
-                    }
-                    else
-                    {
-                        printf("The corrected value still exceeds the balance. Quitting.\n");
-                    }
-                }
-                else
-                {
-                    printf("Quitting without making a withdraw.\n");
-                }
+                printf("Quitting without making a withdrawal.\n");
             }
 
             return;
@@ -291,24 +275,41 @@ void advanced_search(accounts *ptr,int acc_no )
 }
 void deposit(accounts *ptr, int acc_no)
 {
+    int i,x=0;
     long long search_no;
-    int deposit_value, x;
+    double deposit_value;
 
     printf("Enter the account number: ");
     scanf("%lld", &search_no);
 
-    for (int i = 0; i < acc_no; i++)
+    for (i = 0; i < acc_no; i++)
     {
         if (ptr[i].account_number == search_no)
         {
-            printf("Enter the deposit value (should not exceed $10,000): ");
-            scanf("%d", &deposit_value);
+            do
+            {
+                printf("Enter the deposit value (should not exceed $10,000): ");
+                scanf("%lf", &deposit_value);
+
+                if (!(deposit_value <= 10000))
+                {
+                    printf("You entered an amount that exceeds $10,000\n ");
+                    printf(" press 1 if you want to edit the value or press 0 to quit ");
+                    scanf("%d", &x);
+                }
+            }
+            while (!(deposit_value <= 10000) && x == 1);
 
             if (deposit_value <= 10000)
             {
-                ptr[i].balance += deposit_value;
-                if (save(ptr,acc_no)==1)
-                    printf("Deposit successful. New balance: $%.2f\n", ptr[i].balance);
+                 ptr[i].balance += deposit_value;
+                if(save(ptr,acc_no))
+                {
+
+                    printf("Deposit successful. New balance: $%.2lf\n", ptr[i].balance);
+                    transaction_record(search_no, deposit_value, 2);
+
+                }
                 else
                 {
                     printf("Quitting without making a deposit.\n");
@@ -317,35 +318,8 @@ void deposit(accounts *ptr, int acc_no)
             }
             else
             {
-                printf("The value exceeds $10,000\n");
-                printf("Enter 1 to edit the deposit value or 0 to quit: ");
-                scanf("%d", &x);
-
-                if (x == 1)
-                {
-                    printf("Enter the corrected deposit value (should not exceed $10,000): ");
-                    scanf("%d", &deposit_value);
-
-                    if (deposit_value <= 10000)
-                    {
-                        ptr[i].balance += deposit_value;
-                        if (save(ptr,acc_no)==1)
-                            printf("Deposit successful. New balance: $%.2f\n", ptr[i].balance);
-                        else
-                        {
-                            printf("Quitting without making a deposit.\n");
-                            printf("Changes will not be saved.\n");
-                        }
-                    }
-                    else
-                    {
-                        printf("The corrected value still exceeds $10,000. Quitting.\n");
-                    }
-                }
-                else
-                {
-                    printf("Quitting without making a deposit.\n");
-                }
+                printf("Quitting without making a deposit.\n");
+                printf("Changes will not be saved.\n");
             }
 
             return;

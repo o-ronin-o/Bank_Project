@@ -14,6 +14,7 @@ int main(void)
     while (1)
     {
         check = login(s1);
+        char againChoice;
 
         int number_of_accounts = count_accounts();
         accounts *accounts_infile = load(number_of_accounts);
@@ -41,37 +42,118 @@ int main(void)
             switch (choice1)
             {
                 case 1:
-                    // Call the add function here
+                    do{
+                    add(accounts_infile,number_of_accounts);
+                    printf("do you want to delete again (Y/N): \n");
+                    scanf(" %c", &againChoice);
+                    if (againChoice == 'y' || againChoice == 'Y')
+                        continue;
+                    else
+                        break;
+                    }while(1);
                     break;
                 case 2:
+                    do{
                     delete_account(accounts_infile, &number_of_accounts);
+                    printf("do you want to delete again (Y/N): \n");
+                    scanf(" %c", &againChoice);
+                    if (againChoice == 'y' || againChoice == 'Y')
+                        continue;
+                    else
+                        break;
+                    }while(1);
                     break;
                 case 3:
+                    do{
                     modify(accounts_infile, number_of_accounts);
+                    printf("do you want to modify again (Y/N): \n");
+                    scanf(" %c", &againChoice);
+                    if (againChoice == 'y' || againChoice == 'Y')
+                        continue;
+                    else
+                        break;
+                    }while(1);
                     break;
                 case 4:
-                    // Call the search function here
+                    do{
+                    searchAccount(accounts_infile, number_of_accounts);
+                    printf("do you want to search again (Y/N): \n");
+                    scanf(" %c", &againChoice);
+                    if (againChoice == 'y' || againChoice == 'Y')
+                        continue;
+                    else
+                        break;
+                    }while(1);
                     break;
                 case 5:
+                    do{
                     advanced_search(accounts_infile, number_of_accounts);
+                    printf("do you want to do another advanced search again (Y/N): \n");
+                    scanf(" %c", &againChoice);
+                    if (againChoice == 'y' || againChoice == 'Y')
+                        continue;
+                    else
+                        break;
+                    }while(1);
                     break;
                 case 6:
+                    do{
                     withdraw(accounts_infile, number_of_accounts);
+                    printf("do you want to withdraw again (Y/N): \n");
+                    scanf(" %c", &againChoice);
+                    if (againChoice == 'y' || againChoice == 'Y')
+                        continue;
+                    else
+                        break;
+                    }while(1);
                     break;
-                case 7:
+                  case 7:
+                    do{
                     deposit(accounts_infile, number_of_accounts);
+                    printf("do you want to deposit again (Y/N): \n");
+                    scanf(" %c", &againChoice);
+                    if (againChoice == 'y' || againChoice == 'Y')
+                        continue;
+                    else
+                        break;
+                    }while(1);
                     break;
                 case 8:
+                    do{
                     trans(accounts_infile, number_of_accounts);
+                    printf("do you want to do another transaction(Y/N): \n");
+                    scanf(" %c", &againChoice);
+                    if (againChoice == 'y' || againChoice == 'Y')
+                        continue;
+                    else
+                        break;
+                    }while(1);
                     break;
                 case 9:
-                    report(accounts_infile, number_of_accounts);
+                    do{
+                    report(accounts_infile,number_of_accounts);
+                    printf("do you want to print another report(Y/N): \n");
+                    scanf(" %c", &againChoice);
+                    if (againChoice == 'y' || againChoice == 'Y')
+                        continue;
+                    else
+                        break;
+                    }while(1);
                     break;
                 case 10:
+                    do{
+                    print_sorted(accounts_infile, number_of_accounts);
+                    printf("do you want to print again(Y/N): \n");
+                    scanf(" %c", &againChoice);
+                    if (againChoice == 'y' || againChoice == 'Y')
+                        continue;
+                    else
+                        break;
+                    }while(1);
                     print_sorted(accounts_infile, number_of_accounts);
                     break;
                 case 11:
-                    // Add code for exiting the system
+                    printf("exiting the system...");
                     break;
                 default:
                     printf("Invalid option\n");

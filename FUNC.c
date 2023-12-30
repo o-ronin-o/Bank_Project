@@ -264,7 +264,7 @@ void advanced_search(accounts *ptr,int acc_no )
             printf("Name: %s\n", ptr[i].name);
             printf("Email: %s\n", ptr[i].email);
             printf("Balance: %.2f\n", ptr[i].balance);
-            printf("Mobile: %lld\n", ptr[i].mobile);
+            printf("Mobile: 0%lld\n", ptr[i].mobile);
             printf("Date Opened: %s\n", ptr[i].date_opened);
             printf("\n");
 
@@ -425,7 +425,7 @@ void delete_account(accounts *account_list, int *accnum)
                 {
                     account_list[j] = account_list[j + 1];
                 }
-            for (int i = 0; i < *accnum; i++) {
+            for (int i = 0; i < *accnum -1; i++) {
             printf("Account Number: %lld, Name: %s, Balance: %.2lf\n",
            account_list[i].account_number, account_list[i].name, account_list[i].balance);
 }

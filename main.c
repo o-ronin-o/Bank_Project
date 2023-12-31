@@ -163,6 +163,7 @@ int main(void)
         else if (check == 0)
         {
             printf("Invalid username or password\n");
+            printf("Please try Again!\n\n");
         }
         else
         {

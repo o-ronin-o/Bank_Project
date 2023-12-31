@@ -4,7 +4,7 @@
 typedef struct
 {
     char username[50];
-    char password[7];
+    char password[16];
 } User;
 typedef struct
 {

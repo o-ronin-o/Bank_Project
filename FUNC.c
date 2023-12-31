@@ -183,7 +183,7 @@ int save(accounts *account_list,int n)
         f=fopen("accounts.txt","w");
         for (i=0; i<n; i++)
         {
-            fprintf(f,"%lld,%s,%s,%.2lf,%lld,%s\n",account_list[i].account_number,
+            fprintf(f,"%lld,%s,%s,%.2lf,0%lld,%s\n",account_list[i].account_number,
                     account_list[i].name,account_list[i].email,
                     account_list[i].balance,account_list[i].mobile,account_list[i].date_opened);
         }

@@ -22,7 +22,7 @@ int main(void)
         if (check == 1)
         {
             printf("Welcome back\n");
-            printf("\nMenu:\n");
+            printf("\nMenu:\n\n");
             printf("1. ADD\n");
             printf("2. DELETE\n");
             printf("3. MODIFY\n");
@@ -43,8 +43,8 @@ int main(void)
             {
                 case 1:
                     do{
-                    add(accounts_infile,number_of_accounts);
-                    printf("do you want to delete again (Y/N): \n");
+                    add(accounts_infile,&number_of_accounts);
+                    printf("do you want to add again (Y/N): \n");
                     scanf(" %c", &againChoice);
                     if (againChoice == 'y' || againChoice == 'Y')
                         continue;
@@ -154,7 +154,7 @@ int main(void)
                     break;
                 case 11:
                     printf("exiting the system...");
-                    break;
+                    exit(1);
                 default:
                     printf("Invalid option\n");
                     break;

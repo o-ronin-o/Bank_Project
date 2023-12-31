@@ -53,20 +53,14 @@ int login(User *ptr)
     fclose(f);
 
     char username[50];
-    char password[7];
+    char password[16];
 
     printf("Enter your username: ");
     scanf("%s", username);
     fflush(stdin);
-    printf("Enter your 6 characters password: ");
-    scanf("%6s", password);
+    printf("Enter your password: ");
+    scanf("%s", password);
     fflush(stdin);
-
-    if(strlen(password)!=6)
-    {
-        printf("it should be 6 characters");
-        return 0;
-    }
 
     for (int i=0; i<count; i++)
     {
@@ -76,7 +70,6 @@ int login(User *ptr)
             return 1;
         }
     }
-    printf("Invalid username or password");
     return 0;
 }
 

@@ -1,16 +1,14 @@
-/*
-here we're going to write the function definitions.
-we have a couple of examples here from a previous project.
-we're going to delete them they're just here to clarify the purpose of the file.
-*/
 #include <stdio.h>
 #include "FUNC.h"
 #include <stdlib.h>
 #include <string.h>
-
+#include <ctype.h>
+#include <time.h>
+#include <unistd.h>
 
 void transaction_record(long long account_number,double balance,int transaction_type)
 {
+
     //converting long long data type into array of character//
     char accnum[20];
     sprintf(accnum,"%lld.txt",account_number);
@@ -18,23 +16,21 @@ void transaction_record(long long account_number,double balance,int transaction_
     FILE *f;
     f=fopen(accnum,"a+");
     if (f==NULL)
-        {
-            printf("Error in opening %s.txt\n",accnum);
-            fclose(f);
-            return;}
+    {
+        printf("Error in opening %s.txt\n",accnum);
+        fclose(f);
+        return;
+    }
     switch (transaction_type)
     {
     case 1:
         fprintf(f,"withdrowed: %.2lf$\n",balance);
-    break;
+        break;
     case 2:
         fprintf(f,"deposited: %.2lf$\n",balance);
     }
-     fclose(f);
+    fclose(f);
 }
-
-
-
 int login(User *ptr)
 {
     //User users[100];
@@ -42,8 +38,8 @@ int login(User *ptr)
     FILE *f=fopen("users.txt","r");
     if (f==NULL)
     {
-        printf("File not found.\n");
-        return 0;
+        printf("Error: file users.txt not found.\n");
+        exit(1);
     }
 
     int count=0;
@@ -72,13 +68,11 @@ int login(User *ptr)
     }
     return 0;
 }
-
 int count_accounts()
 {
     FILE *f= fopen("accounts.txt","r");
     if (f==NULL)
     {
-        printf("Error: can not find accounts.txt");
         return 0;
     }
     int count=0;
@@ -97,9 +91,9 @@ accounts *load(int accnum)
     if (f==NULL)
     {
         printf("Error: can't find accounts.txt\n");
-        return;
+        exit(1);
     }
-    accounts *list = (accounts *)malloc(accnum * sizeof(accounts)); // Allocate memory for the array of accounts//
+    accounts *list = (accounts *)malloc(accnum * sizeof(accounts));
     if (list == NULL)
     {
         printf("Error in allocating memory.\n");
@@ -114,55 +108,6 @@ accounts *load(int accnum)
     fclose(f);
     return list;
 }
-
-void trans(accounts*accounts_infile,int n)
-{
-    long long account1,account2;
-    double amount;
-    int sender=-1,receiver=-1;
-    printf("Enter the sender's account number: ");
-    scanf("%lld",&account1);
-    fflush(stdin);
-    printf("Enter the receiver's account number: ");
-    scanf("%lld",&account2);
-    fflush(stdin);
-    printf("Enter the amount to be transfered: ");
-    scanf("%lf",&amount);
-    fflush(stdin);
-    //find sender's and receiver's location//
-    int i;
-    for (i=0; i<n; i++)
-    {
-        if(accounts_infile[i].account_number==account1)
-            sender=i;
-        else if(accounts_infile[i].account_number==account2)
-            receiver=i;
-    }
-    if(sender==-1|| receiver==-1)
-    {
-        printf("Invalid account number(s)\n ");
-        return ;
-    }
-    //check if the amount to transfer is lower than the sender's balance//
-    if (amount>accounts_infile[sender].balance)
-    {
-        printf("Not enough balance to transfer. \n");
-        return ;
-    }
-    //modify the balance of the sender and the receiver//
-    accounts_infile[sender].balance-=amount;
-    accounts_infile[receiver].balance+=amount;
-    if (save(accounts_infile,n))
-    {
-        printf("Transfer successful!\nSender's new balance: %.2lf$\nReceiver's new balance: %.2lf$\n",
-               accounts_infile[sender].balance,accounts_infile[receiver].balance);
-               transaction_record(account1,amount,1);
-               transaction_record(account2,amount,2);
-    }
-    else printf("Changes discarded\n");
-
-}
-
 int save(accounts *account_list,int n)
 {
     int i;
@@ -188,22 +133,390 @@ int save(accounts *account_list,int n)
 
     return 0;
 }
+void convertDateFormat(char *inputDate, char *outputDate)
+{
+    struct tm timeStruct;
+    sscanf(inputDate, "%d-%d", &timeStruct.tm_mon, &timeStruct.tm_year);
+    timeStruct.tm_mon--;
+    timeStruct.tm_year -= 1900;
+    strftime(outputDate, 50, "%B %Y", &timeStruct);
+
+}
+char* validate_name()
+{
+    printf("Enter name: ");
+    char* name = malloc(100 * sizeof(char));
+
+    if (name == NULL)
+    {
+        printf("Memory allocation error.\n");
+        exit(1);
+    }
+
+    int i, flag, space_found = 0;
+
+    do
+    {
+        flag=0;
+        fgets(name, 100, stdin);
+        name[strcspn(name, "\n")] = '\0';
+
+        i = 0;
+        while (name[i] != '\0')
+        {
+            if (!isalpha(name[i]))
+            {
+                if (name[i] == ' ')
+                {
+                    space_found = 1;
+                    if (i == 0 || !isalpha(name[i + 1]))
+                    {
+                        space_found = 0;
+                        break;
+                    }
+                }
+                else
+                {
+                    flag = 1;
+                    break;
+                }
+            }
+            i++;
+        }
+
+        if (!space_found || (name[i - 1] == ' ') || flag == 1)
+        {
+            printf("Invalid name, Please enter a valid name: ");
+        }
+
+    }
+    while (!space_found || (name[i - 1] == ' ') || flag == 1);
+
+    return name;
+}
+char* validate_email()
+{
+    char* email = malloc(100 * sizeof(char));
+
+    if (email == NULL)
+    {
+        printf("Memory allocation error.\n");
+        exit(1);
+    }
+    printf("Enter email: ");
+
+    int i = 0, x = 1, at_found = 0, dot_found = 0, space_found = 0;
+
+    do
+    {
+        i = 0;
+        do
+        {
+            //getchar();
+            fgets(email, 100, stdin);
+            email[strcspn(email, "\n")] = '\0';
+            if(!isalpha(email[i]))
+            {
+                x = 0;
+            }
+        }
+        while (!isalpha(email[i]) && x != 0);
+        while (email[i] != '\0')
+        {
+            if (email[i] == '@')
+            {
+                at_found = 1;
+                if(!isalpha(email[i+1]) || i==0)
+                    at_found = 0;
+
+            }
+
+            if (email[i] == '.')
+            {
+                dot_found = 1;
+                if(!isalpha(email[i+1]) || i==0)
+                   dot_found = 0;
+            }
+
+            if (email[i] == ' ')
+            {
+                space_found = 1;
+            }
+
+            i++;
+        }
+
+        if ((email[i] == '\0') && ((!at_found) || (!dot_found) || (space_found)))
+        {
+            printf("Invalid email, Please enter a valid email: ");
+            at_found = 0;
+            dot_found = 0;
+            space_found = 0;
+        }
+
+    }
+    while ((email[i] == '\0') && ((!at_found) || (!dot_found) || (space_found)));
+
+    return email;
+}
+char* validate_mobile_number()
+{
+    printf("Enter (11-digit) mobile number: ");
+    int counter = 0;
+
+    char* mobile = malloc(12 * sizeof(char));
+
+    if (mobile == NULL)
+    {
+        printf("Memory allocation error.\n");
+        exit(1);
+    }
+
+    int i;
+
+    do
+    {
+        fgets(mobile, 12, stdin);
+        mobile[strcspn(mobile, "\n")] = '\0';
+
+        i = 0;
+        while (mobile[i] != '\0')
+        {
+            i++;
+        }
+
+        if (i != 11)
+        {
+            printf("Invalid mobile number, Please enter a valid mobile number: ");
+            continue;
+        }
+
+        i = 0;
+
+        while (mobile[i] != '\0')
+        {
+            if (isdigit(mobile[i]))
+            {
+                counter++;
+            }
+            i++;
+        }
+
+        if (counter != 11)
+        {
+            printf("Mobile number must be an 11-digit number.\nPlease enter another mobile number: ");
+        }
+
+    }
+    while (i != 11 || counter != 11);
+
+    return mobile;
+}
+char* validate_acc_num()
+{
+    char* acc_num = malloc(12 * sizeof(char));
+    if (acc_num == NULL)
+    {
+        printf("Memory allocation error.\n");
+        exit(1);
+    }
+    printf("Enter (10-digit) account number: ");
+
+    int i;
+    while (1)
+    {
+        fgets(acc_num, 12, stdin);
+        fflush(stdin);
+        acc_num[strcspn(acc_num, "\n")] = '\0';
+        for (i = 0; i < 10; i++)
+        {
+            if (!isdigit(acc_num[i]))
+            {
+                break;
+            }
+        }
+
+        if (i == 10 && acc_num[i] == '\0')
+        {
+            break;
+        }
+
+        printf("Invalid account number, please enter a valid account number: ");
+    }
+
+    return acc_num;
+}
+double validate_balance(double current_balance)
+{
+    printf("Enter balance: ");
+    char balance[100];
+    double new_balance;
+    int i = 0, dot_found = 0;
+
+
+    do
+    {
+        fgets(balance, sizeof(balance), stdin);
+        balance[strcspn(balance, "\n")] = '\0';
+
+        i = 0;
+        dot_found = 0;
+        while (balance[i] != '\0')
+        {
+            if (!isdigit(balance[i]))
+            {
+                if (!dot_found && balance[i] == '.')
+                {
+                    dot_found = 1;
+                }
+                else
+                {
+                    printf("Invalid number, Please enter a valid number: ");
+                    break;
+                }
+            }
+            i++;
+        }
+
+        if (balance[i] == '\0')
+        {
+            // Convert the valid balance string to a double
+            sscanf(balance, "%lf", &new_balance);
+            return new_balance;
+        }
+
+    }
+    while (1);
+}
+double validate_money(double current_money)
+{
+    printf("Enter amount of money: ");
+    char balance[100];
+    double new_balance;
+    int i = 0, dot_found = 0;
+
+    do
+    {
+        fgets(balance, sizeof(balance), stdin);
+        balance[strcspn(balance, "\n")] = '\0'; // Remove newline if present
+
+        i = 0;
+        dot_found = 0;
+        while (balance[i] != '\0')
+        {
+            if (!isdigit(balance[i]))
+            {
+                if (!dot_found && balance[i] == '.')
+                {
+                    dot_found = 1;
+                }
+                else
+                {
+                    printf("Invalid number. Please enter another number: ");
+                    break;
+                }
+            }
+            i++;
+        }
+
+        if (balance[i] == '\0')
+        {
+            // Convert the valid balance string to a double
+            sscanf(balance, "%lf", &new_balance);
+            return new_balance;
+        }
+
+    }
+    while (1);
+}
+void trans(accounts*accounts_infile,int n)
+{
+    long long account1,account2;
+    double amount;
+    int sender=-1,receiver=-1;
+    printf("Enter the sender's account number:\n ");
+    char* acc_num_str = validate_acc_num();
+    if (sscanf(acc_num_str, "%lld", &account1) != 1)
+    {
+        printf("Invalid input for account number.\n");
+        free(acc_num_str);
+        return;
+    }
+    free(acc_num_str);
+
+    printf("Enter the receiver's account number:\n ");
+    acc_num_str = validate_acc_num();
+    if (sscanf(acc_num_str, "%lld", &account2) != 1)
+    {
+        printf("Invalid input for account number.\n");
+        free(acc_num_str);
+        return;
+    }
+    free(acc_num_str);
+
+    printf("Enter the amount to be transfered: \n");
+    if (account1==account2)
+    {
+        printf("duplicated input\n");
+        return;
+    }
+    amount = validate_money(amount);
+    fflush(stdin);
+    //find sender's and receiver's location//
+    int i;
+    for (i=0; i<n; i++)
+    {
+        if(accounts_infile[i].account_number==account1)
+            sender=i;
+        else if(accounts_infile[i].account_number==account2)
+            receiver=i;
+    }
+
+    if(sender==-1|| receiver==-1)
+    {
+        printf("Invalid account number(s)\n ");
+        return ;
+    }
+    //check if the amount to transfer is lower than the sender's balance//
+    if (amount>accounts_infile[sender].balance)
+    {
+        printf("Not enough balance to transfer. \n");
+        return ;
+    }
+    //modify the balance of the sender and the receiver//
+    accounts_infile[sender].balance-=amount;
+    accounts_infile[receiver].balance+=amount;
+    if (save(accounts_infile,n))
+    {
+        printf("Transfer successful!\nSender's new balance: %.2lf$\nReceiver's new balance: %.2lf$\n",
+               accounts_infile[sender].balance,accounts_infile[receiver].balance);
+        transaction_record(account1,amount,1);
+        transaction_record(account2,amount,2);
+    }
+    else printf("Changes discarded\n");
+
+}
 void withdraw(accounts *ptr, int acc_no)
 {
     long long search_no;
     int withdrawal_value, x;
 
-    printf("Enter the account number: ");
-    scanf("%lld", &search_no);
-
+    char* acc_num_str = validate_acc_num();
+    if (sscanf(acc_num_str, "%lld", &search_no) != 1)
+    {
+        printf("Invalid input for account number.\n");
+        free(acc_num_str);
+        return;
+    }
+    free(acc_num_str);
     for (int i = 0; i < acc_no; i++)
     {
         if (ptr[i].account_number == search_no)
         {
             do
             {
-                printf("Enter the withdrawal value (should not exceed the balance or $10,000): ");
-                scanf("%d", &withdrawal_value);
+                printf("Enter the withdrawal value (should not exceed the balance or $10,000): \n");
+                withdrawal_value=validate_money(withdrawal_value);
 
                 if (!(withdrawal_value <= 10000 && withdrawal_value <= ptr[i].balance))
                 {
@@ -211,7 +524,8 @@ void withdraw(accounts *ptr, int acc_no)
                     printf("Press 1 to edit the withdrawal value or 0 to quit: ");
                     scanf("%d", &x);
                 }
-            } while (!(withdrawal_value <= 10000 && withdrawal_value <= ptr[i].balance) && x == 1);
+            }
+            while (!(withdrawal_value <= 10000 && withdrawal_value <= ptr[i].balance) && x == 1);
 
             if (withdrawal_value <= 10000 && withdrawal_value <= ptr[i].balance)
             {
@@ -219,13 +533,14 @@ void withdraw(accounts *ptr, int acc_no)
                 if (save(ptr, acc_no) == 1)
                 {
                     printf("Successful withdrawal. New balance: $%.2f\n", ptr[i].balance);
-                      transaction_record(search_no,withdrawal_value,1);
+                    transaction_record(search_no,withdrawal_value,1);
 
                 }
                 else
                 {
                     printf("Quitting without making a withdrawal.\n");
                     printf("Changes will not be saved.\n");
+                    return;
                 }
             }
             else
@@ -243,22 +558,26 @@ void advanced_search(accounts *ptr,int acc_no )
 {
     char keyword[20];
     int found=0;
-    printf("Enter a keyword:");
-    scanf("%s",&keyword);
+    printf("Enter keyword: ");
+    scanf("%s",keyword);
     printf("\n");
-     printf("Search results:\n");
+    printf("Search results:\n");
+    keyword[0] = toupper((unsigned char)keyword[0]);
+
     for (int i = 0; i < acc_no; i++)
     {
-        // Check if the keyword present or not
+
         if (strstr(ptr[i].name, keyword) != NULL )
         {
+            char new_date[20];
+            convertDateFormat(ptr[i].date_opened,new_date);
             printf("\n");
             printf("Account Number: %lld\n", ptr[i].account_number);
             printf("Name: %s\n", ptr[i].name);
             printf("Email: %s\n", ptr[i].email);
             printf("Balance: %.2f\n", ptr[i].balance);
             printf("Mobile: 0%lld\n", ptr[i].mobile);
-            printf("Date Opened: %s\n", ptr[i].date_opened);
+            printf("Date Opened: %s\n", new_date);
             printf("\n");
 
             found=1;
@@ -277,8 +596,14 @@ void deposit(accounts *ptr, int acc_no)
     long long search_no;
     double deposit_value;
 
-    printf("Enter the account number: ");
-    scanf("%lld", &search_no);
+    char* acc_num_str = validate_acc_num();
+    if (sscanf(acc_num_str, "%lld", &search_no) != 1)
+    {
+        printf("Invalid input for account number.\n");
+        free(acc_num_str);
+        return;
+    }
+    free(acc_num_str);
 
     for (i = 0; i < acc_no; i++)
     {
@@ -286,8 +611,8 @@ void deposit(accounts *ptr, int acc_no)
         {
             do
             {
-                printf("Enter the deposit value (should not exceed $10,000): ");
-                scanf("%lf", &deposit_value);
+                printf("Enter the deposit value (should not exceed $10,000):\n ");
+                deposit_value=validate_money(deposit_value);
 
                 if (!(deposit_value <= 10000))
                 {
@@ -300,7 +625,7 @@ void deposit(accounts *ptr, int acc_no)
 
             if (deposit_value <= 10000)
             {
-                 ptr[i].balance += deposit_value;
+                ptr[i].balance += deposit_value;
                 if(save(ptr,acc_no))
                 {
 
@@ -336,14 +661,15 @@ void modify(accounts *accountList, int n)
         perror("Error opening the file");
         return;
     }
-    printf("Enter your account number: ");
-
-    if (scanf("%lld", &acc.account_number) != 1)
+    char* acc_num_str = validate_acc_num();
+    if (sscanf(acc_num_str, "%lld", &acc.account_number) != 1)
     {
-        printf("Error reading account number.\n");
+        printf("Invalid input for account number.\n");
+        free(acc_num_str);
         fclose(f);
         return;
     }
+    free(acc_num_str);
 
     int account_found = 0;
     for (i = 0; i < n; i++)
@@ -351,32 +677,26 @@ void modify(accounts *accountList, int n)
         if (accountList[i].account_number == acc.account_number)
         {
             account_found = 1;
-            printf("Enter the new name: ");
-            getchar();
-            if (fgets(accountList[i].name, sizeof(accountList[i].name), stdin) == NULL)
-            {
-                printf("Error reading name.\n");
-                fclose(f);
-                return;
-            }
-            accountList[i].name[strcspn(accountList[i].name, "\n")] = '\0'; // remove trailing newline
 
-            printf("Enter the new Email: ");
-            if (scanf("%99s", accountList[i].email) != 1)
-            {
-                printf("Error reading email.\n");
-                fclose(f);
-                return;
-            }
+            char* name = validate_name();
+            strcpy(acc.name, name);
+            free(name);
+            strcpy(accountList[i].name,acc.name);
+            int j;
+            accountList[i].name[0] = toupper((unsigned char)accountList[i].name[0]);
+            for(j=0; j<strlen(accountList[i].name); j++)
+                if (accountList[i].name[j]==' ')
+                    accountList[i].name[j+1] = toupper((unsigned char)accountList[i].name[j+1]);
+
+            char* email = validate_email();
+            strcpy(acc.email, email);
+            free(email);
             fflush(stdin);
-            printf("Enter the new phone number: ");
-            if (scanf("%lld", &accountList[i].mobile) != 1)
-            {
-                printf("Error reading phone number.\n");
-                fclose(f);
-                return;
-            }
-
+            strcpy(accountList[i].email,acc.email);
+            char* mobile = validate_mobile_number();
+            sscanf(mobile, "%lld", &acc.mobile);
+            free(mobile);
+            accountList[i].mobile=acc.mobile;
             int x = save(accountList,n);
             if (x==1)
                 printf("Account details modified successfully.\n");
@@ -392,13 +712,17 @@ void modify(accounts *accountList, int n)
 
     fclose(f);
 }
-
-
 void delete_account(accounts *account_list, int *accnum)
 {
     long long account_to_delete;
-    printf("Enter the account number you want to delete: ");
-    scanf("%lld", &account_to_delete);
+    char* acc_num_str = validate_acc_num();
+    if (sscanf(acc_num_str, "%lld", &account_to_delete) != 1)
+    {
+        printf("Invalid input for account number.\n");
+        free(acc_num_str);
+        return;
+    }
+    free(acc_num_str);
 
     int found = 0; // Flag to indicate if the account is found
 
@@ -418,16 +742,17 @@ void delete_account(accounts *account_list, int *accnum)
                 {
                     account_list[j] = account_list[j + 1];
                 }
-            for (int i = 0; i < *accnum -1; i++) {
-            printf("Account Number: %lld, Name: %s, Balance: %.2lf\n",
-           account_list[i].account_number, account_list[i].name, account_list[i].balance);
-}
-
 
                 // Update the file
                 if (save(account_list,*accnum-1)==1)
                 {
                     (*accnum)--;
+                   /* char filename[20];
+                    sprintf(filename, "%lld.txt",account_to_delete);
+                    if (access(filename, F_OK) != -1)
+                        {
+                            remove(filename);
+                        }*/
                     printf("Account deleted successfully.\n");
                 }
                 else
@@ -445,11 +770,6 @@ void delete_account(accounts *account_list, int *accnum)
         printf("Account not found or invalid account number entered.\n");
     }
 }
-
-
-
-
-
 void sortByName(accounts *account_list, int accnum)
 {
     int i, j;
@@ -470,58 +790,57 @@ void sortByName(accounts *account_list, int accnum)
         }
     }
 }
-
-void printMonthYearFormat(char *date) {
+void printMonthYearFormat(char *date)
+{
     int year, month;
     sscanf(date, "%d-%d", &month, &year);
 
-    switch(month) {
-        case 1:
-            printf("January");
-            break;
-        case 2:
-            printf("February");
-            break;
-        case 3:
-            printf("March");
-            break;
-        case 4:
-            printf("April");
-            break;
-        case 5:
-            printf("May");
-            break;
-        case 6:
-            printf("June");
-            break;
-        case 7:
-            printf("July");
-            break;
-        case 8:
-            printf("August");
-            break;
-        case 9:
-            printf("September");
-            break;
-        case 10:
-            printf("October");
-            break;
-        case 11:
-            printf("November");
-            break;
-        case 12:
-            printf("December");
-            break;
-        default:
-            printf("Invalid Month");
-            return;
+    switch(month)
+    {
+    case 1:
+        printf("January");
+        break;
+    case 2:
+        printf("February");
+        break;
+    case 3:
+        printf("March");
+        break;
+    case 4:
+        printf("April");
+        break;
+    case 5:
+        printf("May");
+        break;
+    case 6:
+        printf("June");
+        break;
+    case 7:
+        printf("July");
+        break;
+    case 8:
+        printf("August");
+        break;
+    case 9:
+        printf("September");
+        break;
+    case 10:
+        printf("October");
+        break;
+    case 11:
+        printf("November");
+        break;
+    case 12:
+        printf("December");
+        break;
+    default:
+        printf("Invalid Month");
+        return;
     }
     printf(" %d\n", year);
 }
-
 int compareDates(char *date1, char *date2)
 {
-    // Assuming date format: YYYY-MM-DD
     int year1, month1, year2, month2;
 
     sscanf(date1, "%d-%d", &month1, &year1);
@@ -553,7 +872,6 @@ int compareDates(char *date1, char *date2)
         }
     }
 }
-
 void sortByDate(accounts *account_list, int accnum)
 {
     int i, j;
@@ -574,7 +892,6 @@ void sortByDate(accounts *account_list, int accnum)
         }
     }
 }
-
 void sortByBalance(accounts *account_list, int accnum)
 {
     int i, j;
@@ -595,7 +912,111 @@ void sortByBalance(accounts *account_list, int accnum)
         }
     }
 }
+void add(accounts *account_list, int *accnum)
+{
+    int i;
+    long long new_account_number;
+    FILE *f = fopen("accounts.txt", "a+");
+    if (f == NULL)
+    {
+        printf("File not found.\n");
+        return;
+    }
+    char* acc_num_str = validate_acc_num();
+    if (sscanf(acc_num_str, "%lld", &new_account_number) != 1)
+    {
+        printf("Invalid input for account number.\n");
+        free(acc_num_str);
+        fclose(f);
+        return;
+    }
+    free(acc_num_str);
 
+    for (i = 0; i < *accnum; i++)
+    {
+        if (account_list[i].account_number == new_account_number)
+        {
+            printf("Invalid account number (Duplicate).\n");
+            fclose(f);
+            return;
+        }
+    }
+
+    account_list = realloc(account_list, (++(*accnum)) * sizeof(accounts));
+    account_list[i].account_number = new_account_number;
+
+    char* name = validate_name();
+    strcpy(account_list[i].name, name);
+    free(name);
+    account_list[i].name[0] = toupper((unsigned char)account_list[i].name[0]);
+    int j;
+    for(j=0; j<strlen(account_list[i].name); j++)
+        if (account_list[i].name[j]==' ')
+            account_list[i].name[j+1] = toupper((unsigned char)account_list[i].name[j+1]);
+
+    char* email = validate_email();
+    strcpy(account_list[i].email, email);
+    free(email);
+
+    account_list[i].balance = validate_balance(account_list[i].balance);
+
+    char* mobile = validate_mobile_number();
+    sscanf(mobile, "%lld", &account_list[i].mobile);
+    free(mobile);
+
+    fseek(f, 0, SEEK_END);
+
+    // Get the current date
+    time_t current_time;
+    struct tm *local_time;
+
+    // Get the current time
+    current_time = time(NULL);
+
+    // Convert the current time to the local time struct
+    local_time = localtime(&current_time);
+
+    // Format the date for writing to file as "MM-YYYY" (e.g., "12-2023")
+    strftime(account_list[i].date_opened, sizeof(account_list[i].date_opened), "%m-%Y", local_time);
+
+    // Format the date for displaying as "Month Year" (e.g., "December 2023")
+    char display_date[50];
+    strftime(display_date, sizeof(display_date), "%B %Y", local_time);
+
+    if (save(account_list, (*accnum)) == 1)
+    {
+        char filename[20];
+        sprintf(filename, "%lld.txt", new_account_number);
+        FILE *f_new_account = fopen(filename, "w");
+        if (f_new_account == NULL)
+        {
+            printf("Error opening %s for writing.\n", filename);
+            return;
+        }
+        fclose(f_new_account);
+        printf("\nNew Account Details:\n\n");
+        printf("Account Number: %lld\n", new_account_number);
+        printf("Name: %s\n", account_list[i].name);
+        printf("E-mail: %s\n", account_list[i].email);
+        printf("Balance: %.2lf $\n", account_list[i].balance);
+        printf("Mobile: 0%lld\n", account_list[i].mobile);
+        printf("Opened: %s\n", display_date);
+    }
+    else
+    {
+        printf("Your account was not saved.\n");
+        account_list = realloc(account_list, (--(*accnum)) * sizeof(accounts));
+        if (account_list == NULL)
+        {
+            printf("Error in reallocating memory.\n");
+            fclose(f);
+            return;
+        }
+    }
+
+    fclose(f);
+    return;
+}
 void print_sorted(accounts *account_list, int accnum)
 {
 
@@ -630,40 +1051,50 @@ void print_sorted(accounts *account_list, int accnum)
         printf("Name: %s\n", account_list[i].name);
         printf("Email: %s\n", account_list[i].email);
         printf("Balance: %.2lf$\n", account_list[i].balance);
+
         printf("Mobile: 0%lld\n", account_list[i].mobile);
         printf("Date Opened: ");
         printMonthYearFormat(account_list[i].date_opened);
         printf("-------------------\n");
     }
 }
-void searchAccount(accounts *accountList, int numAccounts) {
+void searchAccount(accounts *accountList, int numAccounts)
+{
     long long accountNumber;
     int i;
     int accountFound = 0;
 
     // Ask the user for the account number
-    printf("Enter the Account Number: ");
-    scanf("%lld", &accountNumber);
+    char* acc_num_str = validate_acc_num();
+    if (sscanf(acc_num_str, "%lld", &accountNumber) != 1)
+    {
+        printf("Invalid input for account number.\n");
+        free(acc_num_str);
+        return;
+    }
+    free(acc_num_str);
 
-    // Loop through the accounts to find the specified account number
-    for (i = 0; i < numAccounts; i++) {
-        if (accountList[i].account_number == accountNumber) {
+    for (i = 0; i < numAccounts; i++)
+    {
+        if (accountList[i].account_number == accountNumber)
+        {
             accountFound = 1;
-
-            // Print the account information in the specified format
+            char new_date[20];
+            convertDateFormat(accountList[i].date_opened,new_date);
             printf("Account Number: %lld\n", accountList[i].account_number);
             printf("Name: %s\n", accountList[i].name);
             printf("E-mail: %s\n", accountList[i].email);
             printf("Balance: %.2lf$\n", accountList[i].balance);
             printf("Mobile: 0%lld\n", accountList[i].mobile);
-            printf("Date Opened: %s\n", accountList[i].date_opened);
+            printf("Date Opened: %s\n", new_date);
 
             break;  // No need to continue searching after finding the account
         }
     }
 
     // If the account is not found, print a message
-    if (!accountFound) {
+    if (!accountFound)
+    {
         printf("Account with Account Number %lld not found.\n", accountNumber);
     }
 }
@@ -685,7 +1116,6 @@ void report(accounts *accounts_infile,int n)
         printf("The account doesn't exist\n");
         return;
     }
-    //converting long long data type into array of character//
     sprintf(accnum,"%lld.txt",account_number);
     FILE *f;
     f=fopen(accnum,"r");
@@ -719,104 +1149,172 @@ void report(accounts *accounts_infile,int n)
     }
     fclose(f);
 }
-void add(accounts *account_list,int*accnum)
+void menu (accounts*accounts_infile,int number_of_accounts)
 {
-    int i;
-    long long new_account_number;
-    FILE *f = fopen("accounts.txt", "a+");
-    if (f == NULL)
-    {
-        printf("File not found.\n");
-        return;
-    }
-    printf("Enter the account number: ");
-    if (scanf("%lld", &new_account_number) != 1)
-    {
-        printf("Invalid input for account number.\n");
-        fclose(f);
-        return;
-    }
+    number_of_accounts = count_accounts();
+    accounts_infile = load(number_of_accounts);
+    int choice1=20;
+    int againChoice;
+    printf("\nMenu:\n");
+    printf("1. ADD\n");
+    printf("2. DELETE\n");
+    printf("3. MODIFY\n");
+    printf("4. SEARCH\n");
+    printf("5. ADVANCED SEARCH\n");
+    printf("6. WITHDRAW\n");
+    printf("7. DEPOSIT\n");
+    printf("8. TRANSFER\n");
+    printf("9. REPORT\n");
+    printf("10.PRINT\n");
+    printf("11.QUIT\n");
 
-    for (i=0; i<*accnum; i++)
-    {
-        if (account_list[i].account_number == new_account_number)
-        {
-            printf("Invalid account number (Duplicate).\n");
-            fclose(f);
-            return;
-        }
-    }
-    account_list = realloc(account_list, (++(*accnum)) * sizeof(accounts));
-    account_list[i].account_number=new_account_number;
 
-    printf("Enter the account name: ");
-    getchar();
-    gets(account_list[i].name);
-
-    printf("Enter the email: ");
-    scanf("%99s", account_list[i].email);
+    scanf("%d", &choice1);
     fflush(stdin);
 
-    printf("Enter the balance: ");
-    scanf("%lf", &account_list[i].balance);
-    fflush(stdin);
 
-    printf("Enter the phone number: ");
-    scanf("%lld", &account_list[i].mobile);
-    fflush(stdin);
-
-    fseek(f, 0, SEEK_END);
-
-    // Get the current date
-    time_t current_time;
-    struct tm *local_time;
-
-// Get the current time
-    current_time = time(NULL);
-
-// Convert the current time to the local time struct
-    local_time = localtime(&current_time);
-
-// Format the date for writing to file as "MM-YYYY" (e.g., "12-2023")
-    strftime(account_list[i].date_opened, sizeof(account_list[i].date_opened), "%m-%Y", local_time);
-
-// Format the date for displaying as "Month Year" (e.g., "December 2023")
-    char display_date[50];
-    strftime(display_date, sizeof(display_date), "%B %Y", local_time);
-
-    if (save(account_list, (*accnum)) == 1)
+    // Switch case for the choices of the admin
+    switch (choice1)
     {
-        char filename[20]; // Adjust the size based on your needs
-        sprintf(filename, "%lld.txt", new_account_number);
-        FILE *f_new_account = fopen(filename, "w");
-        if (f_new_account == NULL)
+    case 1:
+        do
         {
-            printf("Error opening %s for writing.\n", filename);
-            return;
-        }
-        fprintf(f_new_account, "%lld,%s,%s,%.2lf,0%lld,%s\n", new_account_number, account_list[i].name, account_list[i].email, account_list[i].balance, account_list[i].mobile, account_list[i].date_opened);
-        fclose(f_new_account);
-        printf("\nNew Account Details:\n\n");
-        printf("Account Number: %lld\n", new_account_number);
-        printf("Name: %s\n", account_list[i].name);
-        printf("E-mail: %s\n", account_list[i].email);
-        printf("Balance: %.2lf $\n", account_list[i].balance);
-        printf("Mobile: 0%lld\n", account_list[i].mobile);
-        printf("Opened: %s\n", display_date); // Display in letters
-    }
-    else
-    {
-        printf("Your account was not saved.\n");
-        account_list = realloc(account_list, (--(*accnum)) * sizeof(accounts));
-        if (account_list == NULL)
-        {
-            printf("Error in reallocating memory.\n");
-            fclose(f);
-            return;
-        }
-    }
+            add(accounts_infile,&number_of_accounts);
+            printf("\nPress 1 you want to go back to the menu or 0 if you want to exit : \n");
+            scanf(" %d", &againChoice);
+            if (againChoice == 1)
+                menu(accounts_infile,number_of_accounts);
+            else
+                exit(1);
 
-    fclose(f);
-    return;
+        }
+        while(1);
+        break;
+    case 2:
+        do
+        {
+            delete_account(accounts_infile, &number_of_accounts);
+            printf("Press 1 you want to go back to the menu or 0 if you want to exit : \n");
+            scanf(" %d", &againChoice);
+            if (againChoice == 1)
+                menu(accounts_infile,number_of_accounts);
+            else
+                exit(1);
+        }
+        while(1);
+        break;
+    case 3:
+        do
+        {
+            modify(accounts_infile, number_of_accounts);
+            printf("Press 1 you want to go back to the menu or 0 if you want to exit : \n");
+            scanf(" %d", &againChoice);
+            if (againChoice == 1)
+                menu(accounts_infile,number_of_accounts);
+            else
+                exit(1);
+        }
+        while(1);
+        break;
+    case 4:
+        do
+        {
+            searchAccount(accounts_infile, number_of_accounts);
+            printf("Press 1 you want to go back to the menu or 0 if you want to exit : \n");
+            scanf(" %d", &againChoice);
+            if (againChoice == 1)
+                menu(accounts_infile,number_of_accounts);
+            else
+                exit(1);
+        }
+        while(1);
+        break;
+    case 5:
+        do
+        {
+            advanced_search(accounts_infile, number_of_accounts);
+            printf("Press 1 you want to go back to the menu or 0 if you want to exit : \n");
+            scanf(" %d", &againChoice);
+            if (againChoice == 1)
+                menu(accounts_infile,number_of_accounts);
+            else
+                exit(1);
+            break;
+        }
+        while(1);
+        break;
+    case 6:
+        do
+        {
+            withdraw(accounts_infile, number_of_accounts);
+            printf("Press 1 you want to go back to the menu or 0 if you want to exit : \n");
+            scanf(" %d", &againChoice);
+            if (againChoice == 1)
+                menu(accounts_infile,number_of_accounts);
+            else
+                exit(1);
+        }
+        while(1);
+        break;
+    case 7:
+        do
+        {
+            deposit(accounts_infile, number_of_accounts);
+            printf("Press 1 you want to go back to the menu or 0 if you want to exit : \n");
+            scanf(" %d", &againChoice);
+            if (againChoice == 1)
+                menu(accounts_infile,number_of_accounts);
+            else
+                exit(1);
+        }
+        while(1);
+        break;
+    case 8:
+        do
+        {
+            trans(accounts_infile, number_of_accounts);
+            printf("Press 1 you want to go back to the menu or 0 if you want to exit : \n");
+            scanf(" %d", &againChoice);
+            if (againChoice == 1)
+                menu(accounts_infile,number_of_accounts);
+            else
+                exit(1);
+        }
+        while(1);
+        break;
+    case 9:
+        do
+        {
+            report(accounts_infile,number_of_accounts);
+            printf("Press 1 you want to go back to the menu or 0 if you want to exit : \n");
+            scanf(" %d", &againChoice);
+            if (againChoice == 1)
+                menu(accounts_infile,number_of_accounts);
+            else
+                exit(1);
+        }
+        while(1);
+        break;
+    case 10:
+        do
+        {
+            print_sorted(accounts_infile, number_of_accounts);
+            printf("Press 1 you want to go back to the menu or 0 if you want to exit : \n");
+            scanf(" %d", &againChoice);
+            if (againChoice == 1)
+                menu(accounts_infile,number_of_accounts);
+            else
+                exit(1);
+        }
+        while(1);
+        print_sorted(accounts_infile, number_of_accounts);
+        break;
+    case 11:
+        printf("exiting the system...");
+        exit(1);
+    default:
+        printf("Invalid option\n");
+        break;
+    }
 }
 
